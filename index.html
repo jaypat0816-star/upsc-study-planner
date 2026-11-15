@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPSC Study Planner</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+header {
+  background: #142d4e;
+  color: white;
+  padding: 24px 18px;
+}
+header h1 { margin: 0 0 8px; }
+header p { margin: 0; color: #cbd5e1; }
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  background: white;
+  position: sticky;
+  top: 0;
+}
+nav button {
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #e2e8f0;
+  white-space: nowrap;
+}
+nav button.active {
+  background: #2563eb;
+  color: white;
+}
+main { padding: 16px; max-width: 850px; margin: auto; }
+section {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px #0000000a;
+}
+h2 { margin-top: 0; color: #142d4e; }
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.stat {
+  background: #eff6ff;
+  padding: 15px;
+  border-radius: 10px;
+}
+.stat strong { display: block; font-size: 26px; color: #2563eb; }
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+}
+textarea { min-height: 90px; resize: vertical; }
+button.action {
+  background: #2563eb;
+  color: white;
+  border: 0;
+  padding: 11px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button.delete { background: #dc2626; }
+.task {
+  border: 1px solid #e2e8f0;
+  padding: 13px;
+  border-radius: 9px;
+  margin: 10px 0;
+}
+.task small { color: #64748b; display: block; margin: 7px 0; }
+.done { color: #15803d; font-weight: bold; }
+.hidden { display: none; }
+.progress-bg {
+  background: #e2e8f0;
+  height: 13px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.progress-fill {
+  background: #16a34a;
+  height: 100%;
+  width: 0%;
+}
+footer {
+  text-align: center;
+  padding: 22px;
+  color: #64748b;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 UPSC Study Planner</h1>
+  <p>Your daily companion for Civil Services preparation</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showPage('dashboard',this)">Dashboard</button>
+  <button onclick="showPage('tasks',this)">Study Tasks</button>
+  <button onclick="showPage('current',this)">Current Affairs</button>
+  <button onclick="showPage('tests',this)">Mock Tests</button>
+</nav>
+
+<main>
+
+<section id="dashboard">
+  <h2>📊 Your Dashboard</h2>
+  <div class="stats">
+    <div class="stat">
+      <strong id="total">0</strong>Total Tasks
+    </div>
+    <div class="stat">
+      <strong id="completed">0</strong>Completed
+    </div>
+    <div class="stat">
+      <strong id="pending">0</strong>Pending
+    </div>
+    <div class="stat">
+      <strong id="percentage">0%</strong>Progress
+    </div>
+  </div>
+  <h3>Overall Study Progress</h3>
+  <div class="progress-bg">
+    <div class="progress-fill" id="progress"></div>
+  </div>
+  <p id="quote">Consistency is the key to success in UPSC preparation.</p>
+</section>
+
+<section id="tasks" class="hidden">
+  <h2>📝 Add Study Task</h2>
+
+  <form id="taskForm">
+    <label>Subject</label>
+    <select id="subject" required>
+      <option value="">Select subject</option>
+      <option>History</option>
+      <option>Geography</option>
+      <option>Indian Polity</option>
+      <option>Economy</option>
+      <option>Environment</option>
+      <option>Science and Technology</option>
+      <option>Ethics (GS IV)</option>
+      <option>Current Affairs</option>
+      <option>CSAT</option>
+      <option>Optional Subject</option>
+      <option>Essay</option>
+    </select>
+
+    <label>Study Topic</label>
+    <input id="topic" placeholder="Example: Fundamental Rights" required>
+
+    <label>Target Date</label>
+    <input type="date" id="deadline">
+
+    <button class="action" type="submit">Add Task</button>
+  </form>
+
+  <h2>📖 Your Study Tasks</h2>
+  <div id="taskList"></div>
+</section>
+
+<section id="current" class="hidden">
+  <h2>📰 Current Affairs Tracker</h2>
+  <form id="newsForm">
+    <label>Topic / News Headline</label>
+    <input id="newsTitle" placeholder="Example: India and climate change" required>
+    <label>Important Notes</label>
+    <textarea id="newsNote" placeholder="Write important facts and analysis..."></textarea>
+    <button class="action" type="submit">Save Current Affairs</button>
+  </form>
+  <div id="newsList"></div>
+</section>
+
+<section id="tests" class="hidden">
+  <h2>📝 Mock Test Tracker</h2>
+  <form id="testForm">
+    <label>Test Name</label>
+    <input id="testName" placeholder="Example: Polity Mock Test 1" required>
+    <label>Marks Obtained</label>
+    <input id="marks" type="number" min="0" required>
+    <label>Total Marks</label>
+    <input id="totalMarks" type="number" min="1" required>
+    <button class="action" type="submit">Save Test Result</button>
+  </form>
+  <div id="testList"></div>
+</section>
+
+</main>
+
+<footer>
+  Made for UPSC Civil Services Aspirants 🇮🇳
+</footer>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("upscTasks") || "[]");
+let news = JSON.parse(localStorage.getItem("upscNews") || "[]");
+let tests = JSON.parse(localStorage.getItem("upscTests") || "[]");
+
+function saveData() {
+  localStorage.setItem("upscTasks", JSON.stringify(tasks));
+  localStorage.setItem("upscNews", JSON.stringify(news));
+  localStorage.setItem("upscTests", JSON.stringify(tests));
+}
+
+function showPage(page, button) {
+  ["dashboard","tasks","current","tests"].forEach(id => {
+    document.getElementById(id).classList.add("hidden");
+  });
+  document.getElementById(page).classList.remove("hidden");
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  button.classList.add("active");
+}
+
+function updateDashboard() {
+  let done = tasks.filter(t => t.done).length;
+  let total = tasks.length;
+  let percent = total ? Math.round(done / total * 100) : 0;
+
+  document.getElementById("total").textContent = total;
+  document.getElementById("completed").textContent = done;
+  document.getElementById("pending").textContent = total - done;
+  document.getElementById("percentage").textContent = percent + "%";
+  document.getElementById("progress").style.width = percent + "%";
+}
+
+function renderTasks() {
+  let list = document.getElementById("taskList");
+  list.innerHTML = "";
+
+  if (!tasks.length) {
+    list.textContent = "No study tasks added yet.";
+  }
+
+  tasks.forEach((t, i) => {
+    let div = document.createElement("div");
+    div.className = "task";
+
+    let title = document.createElement("strong");
+    title.textContent = t.topic;
+
+    let info = document.createElement("small");
+    info.textContent = t.subject + " | Deadline: " + (t.deadline || "Not set");
+
+    let status = document.createElement("p");
+    status.className = t.done ? "done" : "";
+    status.textContent = t.done ? "Completed ✓" : "Pending";
+
+    let complete = document.createElement("button");
+    complete.className = "action";
+    complete.textContent = t.done ? "Undo" : "Complete";
+    complete.onclick = () => {
+      tasks[i].done = !tasks[i].done;
+      saveData();
+      renderTasks();
+    };
+
+    let remove = document.createElement("button");
+    remove.className = "action delete";
+    remove.style.marginLeft = "7px";
+    remove.textContent = "Delete";
+    remove.onclick = () => {
+      if (confirm("Delete this task?")) {
+        tasks.splice(i, 1);
+        saveData();
+        renderTasks();
+      }
+    };
+
+    div.append(title, info, status, complete, remove);
+    list.appendChild(div);
+  });
+
+  updateDashboard();
+}
+
+document.getElementById("taskForm").onsubmit = function(e) {
+  e.preventDefault();
+  tasks.push({
+    subject: document.getElementById("subject").value,
+    topic: document.getElementById("topic").value,
+    deadline: document.getElementById("deadline").value,
+    done: false
+  });
+  saveData();
+  this.reset();
+  renderTasks();
+  alert("Study task added successfully!");
+};
+
+function renderNews() {
+  let list = document.getElementById("newsList");
+  list.innerHTML = "";
+
+  news.forEach((n, i) => {
+    let div = document.createElement("div");
+    div.className = "task";
+    let title = document.createElement("strong");
+    title.textContent = n.title;
+    let note = document.createElement("p");
+    note.textContent = n.note || "No notes added.";
+    let date = document.createElement("small");
+    date.textContent = n.date;
+    let remove = document.createElement("button");
+    remove.className = "action delete";
+    remove.textContent = "Delete";
+    remove.onclick = () => {
+      news.splice(i, 1);
+      saveData();
+      renderNews();
+    };
+    div.append(title, note, date, remove);
+    list.appendChild(div);
+  });
+}
+
+document.getElementById("newsForm").onsubmit = function(e) {
+  e.preventDefault();
+  news.push({
+    title: document.getElementById("newsTitle").value,
+    note: document.getElementById("newsNote").value,
+    date: new Date().toLocaleDateString()
+  });
+  saveData();
+  this.reset();
+  renderNews();
+  alert("Current affairs saved!");
+};
+
+function renderTests() {
+  let list = document.getElementById("testList");
+  list.innerHTML = "";
+
+  tests.forEach((t, i) => {
+    let div = document.createElement("div");
+    div.className = "task";
+    let title = document.createElement("strong");
+    title.textContent = t.name;
+    let result = document.createElement("p");
+    result.textContent = "Score: " + t.marks + " / " + t.total +
+      " (" + Math.round(t.marks / t.total * 100) + "%)";
+    let date = document.createElement("small");
+    date.textContent = t.date;
+    let remove = document.createElement("button");
+    remove.className = "action delete";
+    remove.textContent = "Delete";
+    remove.onclick = () => {
+      tests.splice(i, 1);
+      saveData();
+      renderTests();
+    };
+    div.append(title, result, date, remove);
+    list.appendChild(div);
+  });
+}
+
+document.getElementById("testForm").onsubmit = function(e) {
+  e.preventDefault();
+  let marks = Number(document.getElementById("marks").value);
+  let total = Number(document.getElementById("totalMarks").value);
+
+  if (total <= 0 || marks < 0 || marks > total) {
+    alert("Please enter valid marks.");
+    return;
+  }
+
+  tests.push({
+    name: document.getElementById("testName").value,
+    marks: marks,
+    total: total,
+    date: new Date().toLocaleDateString()
+  });
+  saveData();
+  this.reset();
+  renderTests();
+  alert("Mock test result saved!");
+};
+
+renderTasks();
+renderNews();
+renderTests();
+</script>
+
+</body>
+</html>
